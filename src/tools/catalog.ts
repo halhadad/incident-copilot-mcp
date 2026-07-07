@@ -65,8 +65,11 @@ export const catalogTool: ToolDef = {
       databaseTables: tables,
       dataWindow: window,
       hint:
-        "Use logs_summarize to triage a service, db_schema before joining tables, " +
-        "and db_query (dryRun first for heavy queries) to confirm impact.",
+        "Use logs_summarize to triage a service (check topWarnSignatures too, not just " +
+        "errors), db_schema before joining tables, and db_query (dryRun first for heavy " +
+        "queries) to confirm impact. If the symptom matches a known failure mode, read " +
+        "the matching runbook://latency, runbook://payments, runbook://inventory, or " +
+        "runbook://deploy-regression resource for the expected evidence trail.",
     });
   },
 };
