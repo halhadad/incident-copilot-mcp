@@ -134,7 +134,7 @@ async function runScenario(
   }
 
   return {
-    answer: "(no final answer — step limit reached)",
+    answer: "(no final answer, step limit reached)",
     toolsUsed,
     sqlSeen,
     totalTokens,

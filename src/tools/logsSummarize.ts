@@ -91,7 +91,7 @@ export const logsSummarizeTool: ToolDef = {
       note: sampled
         ? `Stats are computed over the most recent ${SAMPLE_LIMIT} lines, not the full window. Narrow the time range for exact numbers.`
         : latencyElevatedWithNoErrors
-          ? "Latency is elevated but there are no error/fatal lines — check topWarnSignatures below before looking elsewhere for a cause."
+          ? "Latency is elevated but there are no error/fatal lines. Check topWarnSignatures below before looking elsewhere for a cause."
           : undefined,
       errorCount: errors.length,
       errorRate: Number((errors.length / parsed.length).toFixed(4)),

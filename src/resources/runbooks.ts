@@ -15,7 +15,7 @@ export const runbooks: RunbookResource[] = [
     text: [
       "# Runbook: Latency Spike",
       "",
-      "1. `logs_summarize` the affected service — look at the latency p95/p99 and the error-rate trend.",
+      "1. `logs_summarize` the affected service and look at the latency p95/p99 and the error-rate trend.",
       "2. If latency dominates (not errors), suspect a slow query or missing index.",
       "3. `db_schema` the hot tables and check whether the filtered column is indexed.",
       "4. `db_query` with `dryRun: true` to read the planner cost / row estimate for the suspect query.",
@@ -30,7 +30,7 @@ export const runbooks: RunbookResource[] = [
     text: [
       "# Runbook: Payment Failures",
       "",
-      "1. `logs_summarize` the `checkout` (or `payments`) service — look for a provider-error signature.",
+      "1. `logs_summarize` the `checkout` (or `payments`) service and look for a provider-error signature.",
       "2. `logs_query` for the specific error to confirm volume and timing.",
       "3. `db_schema` the `payments` table.",
       "4. `db_query` the distribution of `payments.status` to quantify stuck rows (status='pending').",
@@ -45,7 +45,7 @@ export const runbooks: RunbookResource[] = [
     text: [
       "# Runbook: Inventory Oversell",
       "",
-      "1. `logs_summarize` the `inventory` service — look for oversell/negative-stock errors.",
+      "1. `logs_summarize` the `inventory` service and look for oversell/negative-stock errors.",
       "2. `db_schema` the `inventory` table.",
       "3. `db_query` for rows where `quantity < 0` to confirm the oversell.",
       "4. Root cause: a race condition allowed orders to deplete stock below zero.",

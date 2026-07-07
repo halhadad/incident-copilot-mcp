@@ -1,7 +1,6 @@
 export interface Incident {
   id: string;
   symptom: string;
-  service: string;
   expectedRootCause: string;
   expectedTables: string[];
   expectedTools: string[];
@@ -12,7 +11,6 @@ export const incidents: Incident[] = [
   {
     id: "slow_query",
     symptom: "Checkout latency has spiked over the last 30 minutes.",
-    service: "checkout",
     expectedRootCause:
       "Queries filtering orders by user_id are doing sequential scans because orders.user_id has no index, causing high latency.",
     expectedTables: ["orders"],
@@ -28,7 +26,6 @@ export const incidents: Incident[] = [
   {
     id: "payment_failures",
     symptom: "Customers report that their payments are not completing.",
-    service: "payments",
     expectedRootCause:
       "The payment provider is timing out, leaving a large number of payments stuck in the 'pending' status.",
     expectedTables: ["payments"],
@@ -43,7 +40,6 @@ export const incidents: Incident[] = [
   {
     id: "inventory_oversell",
     symptom: "Support says some products sold more units than we had in stock.",
-    service: "inventory",
     expectedRootCause:
       "A race condition allowed orders to deplete stock below zero, producing negative inventory quantities (oversell).",
     expectedTables: ["inventory"],
@@ -58,7 +54,6 @@ export const incidents: Incident[] = [
   {
     id: "deploy_regression",
     symptom: "Error rate on the API jumped suddenly this afternoon.",
-    service: "api",
     expectedRootCause:
       "The error-rate spike begins immediately after the most recent deploy marker, indicating a regression introduced by that deploy.",
     expectedTables: [],
@@ -71,7 +66,3 @@ export const incidents: Incident[] = [
     ].join(" "),
   },
 ];
-
-export function incidentById(id: string): Incident | undefined {
-  return incidents.find((i) => i.id === id);
-}

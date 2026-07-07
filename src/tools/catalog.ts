@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { readOnlyQuery } from "../core/pg.js";
 import { labelValues } from "../core/loki.js";
 import { describe } from "./descriptions.js";
@@ -27,7 +26,7 @@ async function dataWindow(): Promise<{ from: string; to: string } | null> {
     const tables = tablesRes.rows.map((r) => String(r.table_name));
     if (tables.length === 0) return null;
 
-    // identifiers from information_schema, not user input — quoted defensively
+    // identifiers from information_schema, not user input, quoted defensively
     const union = tables
       .map((t) => `SELECT min(created_at) AS lo, max(created_at) AS hi FROM "${t.replace(/"/g, '""')}"`)
       .join(" UNION ALL ");
@@ -73,5 +72,3 @@ export const catalogTool: ToolDef = {
     });
   },
 };
-
-export const catalogInput = z.object({});

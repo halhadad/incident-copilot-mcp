@@ -1,6 +1,6 @@
 import { pino, destination, stdTimeFunctions } from "pino";
 
-// stdout is the MCP transport channel — logs must go to stderr (fd 2) only.
+// stdout is the MCP transport channel; logs must go to stderr (fd 2) only.
 export const logger = pino(
   {
     name: "incident-copilot-mcp",

@@ -49,12 +49,12 @@ export function renderReport(
   lines.push("");
 
   for (const r of reports) {
-    lines.push(`## Detail — variant ${r.variant}\n`);
+    lines.push(`## Detail: variant ${r.variant}\n`);
     lines.push("| Scenario | Root cause | Tools | Tables | Tokens | Tools used |");
     lines.push("|---|---|---|---|---|---|");
     for (const x of r.results) {
       lines.push(
-        `| ${x.scenarioId} | ${x.rootCauseCorrect ? "✅" : "❌"} | ${pct(x.toolCorrectness)} | ${pct(x.tableCorrectness)} | ${x.totalTokens.toLocaleString()} | ${x.toolsUsed.join(", ") || "—"} |`,
+        `| ${x.scenarioId} | ${x.rootCauseCorrect ? "yes" : "no"} | ${pct(x.toolCorrectness)} | ${pct(x.tableCorrectness)} | ${x.totalTokens.toLocaleString()} | ${x.toolsUsed.join(", ") || "none"} |`,
       );
     }
     lines.push("");
@@ -65,7 +65,7 @@ export function renderReport(
     lines.push("| Check | Blocked? | Detail |");
     lines.push("|---|---|---|");
     for (const s of safety) {
-      lines.push(`| ${s.check} | ${s.blocked ? "✅ blocked" : "❌ ALLOWED"} | ${s.detail} |`);
+      lines.push(`| ${s.check} | ${s.blocked ? "blocked" : "ALLOWED"} | ${s.detail} |`);
     }
     lines.push("");
   }

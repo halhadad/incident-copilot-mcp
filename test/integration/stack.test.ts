@@ -31,7 +31,7 @@ afterAll(async () => {
   await closePool();
 });
 
-describe("layer 1 — database role", () => {
+describe("layer 1: database role", () => {
   it("incident_ro cannot INSERT even with raw SQL outside our code paths", async () => {
     const client = new pg.Client({ connectionString: RO_URL });
     await client.connect();
@@ -47,7 +47,7 @@ describe("layer 1 — database role", () => {
   });
 });
 
-describe("layer 2 — read-only transaction + statement timeout", () => {
+describe("layer 2: read-only transaction + statement timeout", () => {
   it("blocks DELETE at the transaction level (bypassing the SQL guard)", async () => {
     await expect(readOnlyQuery("DELETE FROM orders WHERE id = 1")).rejects.toThrow(
       /read-only|permission denied/i,

@@ -88,7 +88,7 @@ async function preflight(): Promise<void> {
   } catch (err) {
     logger.warn(
       { target: "postgres", error: err instanceof Error ? err.message : String(err) },
-      "preflight_failed — db tools will return errors until Postgres is reachable",
+      "preflight_failed: db tools will return errors until Postgres is reachable",
     );
   }
   try {
@@ -97,7 +97,7 @@ async function preflight(): Promise<void> {
   } catch (err) {
     logger.warn(
       { target: "loki", error: err instanceof Error ? err.message : String(err) },
-      "preflight_failed — log tools will return errors until Loki is reachable",
+      "preflight_failed: log tools will return errors until Loki is reachable",
     );
   }
 }

@@ -1,4 +1,4 @@
-// chars/4 heuristic, not a real tokenizer — close enough for budgeting decisions.
+// chars/4 heuristic, not a real tokenizer, close enough for budgeting decisions.
 export function estimateTokens(value: unknown): number {
   const text = typeof value === "string" ? value : JSON.stringify(value);
   return Math.ceil(text.length / 4);
