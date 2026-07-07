@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { seedData } from "./seedData.js";
 import { seedLogs } from "./seedLogs.js";
 
