@@ -51,10 +51,13 @@ const DESCRIPTIONS: Descriptions = {
     v1: "Summarize logs for a service over a time window.",
     v2: [
       "Summarize a service's logs over a time window WITHOUT reading individual",
-      "lines: error-rate trend, the top clustered error signatures (similar",
-      "messages grouped into templates), and latency percentiles. Call this",
-      "FIRST when triaging 'what's wrong with service X' — it surfaces the",
-      "dominant failure pattern in a few hundred tokens. Drill in with logs_query.",
+      "lines: error-rate trend, the top clustered error AND warning signatures",
+      "(similar messages grouped into templates), and latency percentiles. Call",
+      "this FIRST when triaging 'what's wrong with service X' — it surfaces the",
+      "dominant failure pattern in a few hundred tokens. IMPORTANT: elevated",
+      "latency with zero errors does not mean there is no explanation — check",
+      "topWarnSignatures before assuming the cause lies in another service.",
+      "Drill in with logs_query.",
     ].join(" "),
   },
 };

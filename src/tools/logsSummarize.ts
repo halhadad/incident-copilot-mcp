@@ -73,12 +73,15 @@ export const logsSummarizeTool: ToolDef = {
 
     const parsed = entries.map((e) => parseLine(e.ts, e.line, e.labels));
     const errors = parsed.filter((p) => p.level === "error" || p.level === "fatal");
+    const warnings = parsed.filter((p) => p.level === "warn");
     const latencies = parsed
       .map((p) => p.latencyMs)
       .filter((v): v is number => typeof v === "number");
 
     const buckets = bucketErrorRate(parsed, startMs, endMs, 6);
     const sampled = entries.length >= SAMPLE_LIMIT;
+    const p95 = latencies.length ? percentile(latencies, 95) : 0;
+    const latencyElevatedWithNoErrors = errors.length === 0 && p95 > 1000;
 
     return jsonResult({
       service,
@@ -87,15 +90,18 @@ export const logsSummarizeTool: ToolDef = {
       sampled,
       note: sampled
         ? `Stats are computed over the most recent ${SAMPLE_LIMIT} lines, not the full window. Narrow the time range for exact numbers.`
-        : undefined,
+        : latencyElevatedWithNoErrors
+          ? "Latency is elevated but there are no error/fatal lines — check topWarnSignatures below before looking elsewhere for a cause."
+          : undefined,
       errorCount: errors.length,
       errorRate: Number((errors.length / parsed.length).toFixed(4)),
       errorRateTrend: buckets,
       topErrorSignatures: clusterMessages(errors.map((e) => e.msg), 8),
+      topWarnSignatures: clusterMessages(warnings.map((w) => w.msg), 8),
       latencyMs: latencies.length
         ? {
             p50: Math.round(percentile(latencies, 50)),
-            p95: Math.round(percentile(latencies, 95)),
+            p95: Math.round(p95),
             p99: Math.round(percentile(latencies, 99)),
             max: Math.max(...latencies),
           }

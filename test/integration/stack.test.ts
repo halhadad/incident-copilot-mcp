@@ -161,4 +161,11 @@ describe("logs_summarize tool (end-to-end)", () => {
     });
     expect(result.isError).toBe(true);
   });
+
+  it("surfaces the planted slow-query warning even with zero errors", async () => {
+    const p = payload(await logsSummarizeTool.handler({ service: "checkout" }));
+    expect(Number(p.errorCount)).toBe(0);
+    const sigs = p.topWarnSignatures as { template: string; count: number }[];
+    expect(sigs[0]!.template).toContain("slow query on orders table");
+  });
 });
