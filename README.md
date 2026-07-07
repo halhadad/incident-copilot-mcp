@@ -110,33 +110,39 @@ git clone https://github.com/YOUR_GITHUB_USERNAME/incident-copilot-mcp.git
 cd incident-copilot-mcp
 npm install
 
-# 2. Start the local stack (Postgres + Loki)
+# 2. Configure — copy the example env; it's loaded automatically (dotenv)
+cp .env.example .env
+#    If port 5432 is already in use locally, edit POSTGRES_PORT and the
+#    port in DATABASE_URL / SEED_DATABASE_URL in .env to match.
+
+# 3. Start the local stack (Postgres + Loki)
 docker compose up -d
 
-# 3. Seed: schema, read-only role, ~20k orders, correlated logs, 4 planted incidents
+# 4. Seed: schema, read-only role, ~20k orders, correlated logs, 4 planted incidents
 npm run seed
 
-# 4. Verify
+# 5. Verify
 npm run typecheck && npm run lint && npm test   # 41 unit tests
 npm run test:integration                        # proves all 4 safety layers live
 npm run build                                   # emits dist/server.js
 
-# 5. Register with Claude Code (from this directory)
+# 6. Register with Claude Code (from this directory)
 claude mcp add incident-copilot -- node ./dist/server.js
 #    ...or copy the "incident-copilot" block from .mcp.json into
 #    Claude Desktop's claude_desktop_config.json (use ABSOLUTE paths there).
 
-# 6. Demo
+# 7. Demo
 #    In Claude: "Checkout latency spiked, investigate."
 #    Watch it call logs_summarize → db_schema → db_query and cite the missing index.
 
-# 7. (Optional) Run the evals — requires ANTHROPIC_API_KEY
-export ANTHROPIC_API_KEY=sk-ant-...
+# 8. (Optional) Run the evals — requires ANTHROPIC_API_KEY
+#    Add it to .env, or export ANTHROPIC_API_KEY=sk-ant-... for this shell.
 npm run evals        # v1 vs v2 tool surfaces + safety probes → evals/report.md
 ```
 
 Config lives in environment variables (validated at boot — bad config fails
-fast with a readable error). See [.env.example](.env.example) for every knob.
+fast with a readable error), loaded from `.env` via dotenv. See
+[.env.example](.env.example) for every knob.
 
 ---
 
