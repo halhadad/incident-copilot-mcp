@@ -4,6 +4,6 @@ dist/
 .env
 .env.local
 evals/report.md
-.claude/settings.local.json
+.claude/
 *.md
 !README.md
