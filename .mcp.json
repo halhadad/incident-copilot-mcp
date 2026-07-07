@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "incident-copilot": {
+      "command": "node",
+      "args": ["./dist/server.js"],
+      "env": {
+        "DATABASE_URL": "postgres://incident_ro:incident_ro@localhost:5432/incident",
+        "LOKI_URL": "http://localhost:3100"
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    name: Typecheck · Lint · Unit tests · Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Dependency audit (fail on high/critical)
+        run: npm audit --audit-level=high
+
+  integration:
+    name: Integration tests (live Postgres + Loki)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: incident
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d incident"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      loki:
+        image: grafana/loki:2.9.8
+        ports:
+          - 3100:3100
+    env:
+      DATABASE_URL: postgres://incident_ro:incident_ro@localhost:5432/incident
+      SEED_DATABASE_URL: postgres://postgres:postgres@localhost:5432/incident
+      LOKI_URL: http://localhost:3100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Wait for Loki to be ready
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:3100/ready >/dev/null 2>&1; then
+              echo "Loki ready"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Loki never became ready" >&2; exit 1
+      - run: npm run test:integration
