@@ -103,8 +103,14 @@ only, enforced by Postgres itself, the actual boundary), a read-only
 transaction with a statement timeout, an AST guard that rejects non-`SELECT`
 statements and clamps `LIMIT` (`src/core/sqlGuard.ts`), and result-side
 redaction/budgeting. The AST guard is explicitly not trusted as the boundary:
-SQL parsers can be fooled, so layers 1 and 2 have to hold regardless. Full
-threat model in `SECURITY.md`.
+SQL parsers can be fooled, so layers 1 and 2 have to hold regardless. The
+integration suite proves each layer independently against a live database
+rather than trusting the application code alone.
+
+**Every tool call and every guard denial is audit-logged.** Structured JSON
+via pino to stderr (stdout is the MCP transport channel and can't carry log
+output): tool name, duration, and error flag on every call, plus the offending
+SQL on any guard denial. `LOG_LEVEL=debug` includes full tool arguments.
 
 **Tool descriptions are a variable, not documentation.** Prescriptive
 descriptions ("call this first", "check X before assuming Y") measurably
@@ -156,6 +162,6 @@ the evals grade against the same definitions, so they can't drift apart.
   never the primary, in anything resembling production.
 - Re-running `npm run seed` re-pushes logs to Loki (append-only); restart the
   `loki` container for a clean slate.
-
-Full threat model, including what each safety layer does and does not
-guarantee, is in `SECURITY.md`.
+- This is a portfolio/demo project, not a hardened multi-tenant service. If
+  you add an HTTP transport for remote access, authentication (OAuth per the
+  MCP spec), TLS, and per-client rate limiting need to come first.
