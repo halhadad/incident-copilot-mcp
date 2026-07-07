@@ -97,13 +97,16 @@ test/                   unit tests + test/integration (live-stack suite)
 
 ## Decisions and tradeoffs
 
-**SQL safety is layered, and only one layer is the real boundary.** A write
-has to get through all four: the `incident_ro` Postgres role (`GRANT SELECT`
-only, enforced by Postgres itself, the actual boundary), a read-only
-transaction with a statement timeout, an AST guard that rejects non-`SELECT`
-statements and clamps `LIMIT` (`src/core/sqlGuard.ts`), and result-side
-redaction/budgeting. The AST guard is explicitly not trusted as the boundary:
-SQL parsers can be fooled, so layers 1 and 2 have to hold regardless. The
+**The actual write boundary is a Postgres role and a read-only transaction,
+not application code.** `incident_ro` has `GRANT SELECT` only, and every query
+runs inside `BEGIN TRANSACTION READ ONLY` with a `statement_timeout`: both
+standard Postgres mechanisms, enforced by Postgres itself regardless of what
+this server does. On top of that, an AST guard (`src/core/sqlGuard.ts`)
+rejects non-`SELECT` statements and clamps `LIMIT` before a query is even
+sent, giving a fast, readable rejection instead of a raw driver error, and
+result-side redaction/budgeting shape what comes back. The AST guard is
+explicitly not trusted as the boundary: SQL parsers can be fooled, so the
+Postgres-enforced role and transaction have to hold regardless. The
 integration suite proves each layer independently against a live database
 rather than trusting the application code alone.
 
