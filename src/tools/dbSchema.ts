@@ -42,17 +42,16 @@ async function primaryKeyFor(table: string): Promise<string[]> {
 async function foreignKeysFor(
   table: string,
 ): Promise<TableSchema["foreignKeys"]> {
+  // constraint_column_usage hides rows from non-owner roles; pg_constraint doesn't.
   const res = await readOnlyQuery(
-    `SELECT kcu.column_name AS col,
-            ccu.table_name  AS ref_table,
-            ccu.column_name AS ref_col
-       FROM information_schema.table_constraints tc
-       JOIN information_schema.key_column_usage kcu
-         ON tc.constraint_name = kcu.constraint_name AND tc.table_schema = kcu.table_schema
-       JOIN information_schema.constraint_column_usage ccu
-         ON ccu.constraint_name = tc.constraint_name AND ccu.table_schema = tc.table_schema
-      WHERE tc.constraint_type = 'FOREIGN KEY'
-        AND tc.table_schema = 'public' AND tc.table_name = $1`,
+    `SELECT a.attname AS col, cf.relname AS ref_table, af.attname AS ref_col
+       FROM pg_constraint c
+       JOIN pg_class cl ON cl.oid = c.conrelid
+       JOIN pg_namespace n ON n.oid = cl.relnamespace
+       JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY(c.conkey)
+       JOIN pg_class cf ON cf.oid = c.confrelid
+       JOIN pg_attribute af ON af.attrelid = c.confrelid AND af.attnum = ANY(c.confkey)
+      WHERE c.contype = 'f' AND n.nspname = 'public' AND cl.relname = $1`,
     [table],
   );
   return res.rows.map((r) => ({
