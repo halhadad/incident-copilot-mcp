@@ -55,19 +55,15 @@ suite against real Postgres + Loki service containers.
 
 ## Architecture
 
-```
-Claude (MCP client)
-      |  stdio
-      v
-src/server.ts   tools + resources + prompt, audit logging, startup preflight
-      |
-      +-- tools/       catalog, dbSchema, dbQuery, logsQuery, logsSummarize
-      +-- core/         sqlGuard, pg, redact, budget, logCluster, loki, time, log
-      +-- resources/   runbooks.ts (runbook:// playbooks)
-      +-- prompts/     investigate.ts
-      |
-      v                    v
-Postgres (RO role)      Loki (logs)
+```mermaid
+graph TD
+    Client["Claude (MCP client)"] -->|stdio| Server["src/server.ts<br/>tools + resources + prompt, audit logging, startup preflight"]
+    Server --> Tools["tools/<br/>catalog, dbSchema, dbQuery, logsQuery, logsSummarize"]
+    Server --> Core["core/<br/>sqlGuard, pg, redact, budget, logCluster, loki, time, log"]
+    Server --> Resources["resources/<br/>runbooks.ts (runbook:// playbooks)"]
+    Server --> Prompts["prompts/<br/>investigate.ts"]
+    Core --> Postgres[("Postgres (RO role)")]
+    Core --> Loki[("Loki (logs)")]
 ```
 
 | Tool | Purpose |
